@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Sudoku Annie">
+  <link rel="apple-touch-icon" href="./icons/icon-180.png">
+  <link rel="manifest" href="./manifest.json">
+  <title>Sudoku Annie</title>
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+
+  <!-- ══════════════════════════════════════════════════════════
+       HOME SCREEN
+  ═══════════════════════════════════════════════════════════ -->
+  <div id="home-screen" class="screen">
+    <div class="home-inner">
+
+      <h1 class="home-title">Sudoku Annie</h1>
+
+      <button id="btn-start" class="btn-start">Start New Game</button>
+
+      <div id="error-banner" class="error-banner" role="alert">
+        <span>Couldn't load puzzle. Check your connection and try again.</span>
+        <button id="btn-retry" class="btn-retry">Retry</button>
+      </div>
+
+      <div id="home-difficulty" class="difficulty-row" role="group" aria-label="Difficulty">
+        <button class="diff-btn selected" data-diff="easy">Easy</button>
+        <button class="diff-btn" data-diff="medium">Medium</button>
+        <button class="diff-btn" data-diff="hard">Hard</button>
+      </div>
+
+      <div class="ongoing-section">
+        <p class="section-label">Ongoing Games</p>
+        <div id="games-list" class="games-list"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════
+       GAME SCREEN
+  ═══════════════════════════════════════════════════════════ -->
+  <div id="game-screen" class="screen">
+
+    <!-- Header -->
+    <header class="game-header">
+      <button id="btn-back" class="btn-back" aria-label="Back to home">← Back</button>
+      <span class="game-title">Sudoku Annie</span>
+      <div class="timer-area">
+        <span id="timer-display" class="timer-display">00:00</span>
+        <button id="btn-pause" class="btn-pause" aria-label="Pause game">⏸</button>
+      </div>
+    </header>
+
+    <!-- Meta row -->
+    <div class="game-meta">
+      <span id="meta-difficulty" class="meta-difficulty">EASY</span>
+      <div class="toggle-wrap">
+        <span class="toggle-label">Error Check</span>
+        <div id="error-check-toggle" class="toggle-pill on" role="switch" aria-checked="true" tabindex="0" aria-label="Error check toggle"></div>
+      </div>
+    </div>
+
+    <!-- Sudoku Grid -->
+    <div class="grid-container">
+      <div id="sudoku-grid" class="sudoku-grid" role="grid" aria-label="Sudoku grid"></div>
+    </div>
+
+    <!-- Controls -->
+    <div class="controls-area">
+
+      <!-- Action row -->
+      <div class="action-row">
+        <button id="btn-undo" class="action-btn disabled" aria-label="Undo">
+          <span class="action-icon">↩</span>
+          <span class="action-label">UNDO</span>
+        </button>
+        <button id="btn-erase" class="action-btn" aria-label="Erase">
+          <span class="action-icon">⌫</span>
+          <span class="action-label">ERASE</span>
+        </button>
+        <button id="btn-notes" class="action-btn" aria-label="Toggle notes mode">
+          <span class="action-icon">✏️</span>
+          <span class="action-label">NOTES</span>
+        </button>
+        <button id="btn-hint" class="action-btn" aria-label="Use hint">
+          <span class="action-icon">💡</span>
+          <span class="action-label">HINT (3)</span>
+        </button>
+      </div>
+
+      <!-- Numpad row -->
+      <div class="numpad-row">
+        <button class="num-btn" data-digit="1">1</button>
+        <button class="num-btn" data-digit="2">2</button>
+        <button class="num-btn" data-digit="3">3</button>
+        <button class="num-btn" data-digit="4">4</button>
+        <button class="num-btn" data-digit="5">5</button>
+        <button class="num-btn" data-digit="6">6</button>
+        <button class="num-btn" data-digit="7">7</button>
+        <button class="num-btn" data-digit="8">8</button>
+        <button class="num-btn" data-digit="9">9</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════
+       MODALS
+  ═══════════════════════════════════════════════════════════ -->
+
+  <!-- Pause Modal -->
+  <div id="pause-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="pause-modal-title">
+    <div class="modal">
+      <p id="pause-modal-title" class="modal-title" style="text-align:center;">Paused</p>
+      <div id="pause-time" class="modal-time-large">00:00</div>
+      <div class="modal-buttons">
+        <button id="btn-resume" class="btn-modal-primary">Resume</button>
+        <button id="btn-leave-game" class="btn-modal-secondary">Leave Game</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Completion Modal -->
+  <div id="completion-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="completion-title">
+    <div class="modal">
+      <p id="completion-title" class="modal-title">Puzzle complete</p>
+      <div class="modal-stats">
+        <div class="modal-stat-row">
+          <span class="modal-stat-label">Difficulty</span>
+          <span id="completion-diff" class="modal-stat-value">Easy</span>
+        </div>
+        <div class="modal-stat-row">
+          <span class="modal-stat-label">Time</span>
+          <span id="completion-time" class="modal-stat-value">00:00</span>
+        </div>
+        <div class="modal-stat-row">
+          <span class="modal-stat-label">Errors</span>
+          <span id="completion-errors" class="modal-stat-value">0</span>
+        </div>
+      </div>
+      <div class="modal-buttons">
+        <button id="btn-completion-new-game" class="btn-modal-primary">New Game</button>
+        <button id="btn-completion-home" class="btn-modal-secondary">Home</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- New Game Modal -->
+  <div id="new-game-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="new-game-title">
+    <div class="modal">
+      <p id="new-game-title" class="modal-title">New Game</p>
+      <p class="modal-subtitle">Select a difficulty to begin.</p>
+      <div id="modal-difficulty" class="modal-difficulty-row" role="group" aria-label="Difficulty">
+        <button class="diff-btn selected" data-diff="easy">Easy</button>
+        <button class="diff-btn" data-diff="medium">Medium</button>
+        <button class="diff-btn" data-diff="hard">Hard</button>
+      </div>
+      <div class="modal-buttons">
+        <button id="btn-modal-start" class="btn-modal-primary">Start</button>
+        <button id="btn-modal-cancel" class="btn-modal-secondary">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="./app.js"></script>
+</body>
+</html>
